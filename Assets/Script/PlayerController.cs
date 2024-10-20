@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private bool canDash = true;
+    private bool isDashing;
+    [SerializeField] float dashingPower =4f;
+    [SerializeField] float dashingTime = 0.2f;
+    [SerializeField] float dashingCooldown = 1f;
     Rigidbody2D rigidbody2D;
     Animator animator;
     [SerializeField] float speed;
@@ -13,12 +18,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] bool onground;
     [SerializeField] bool isjump;
     [SerializeField] bool isattack;
+
+    [SerializeField] private TrailRenderer tr;
+
     public LayerMask groundLayer;
 
     void Awake()
     {
         rigidbody2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        tr = GetComponent<TrailRenderer>();
     }
 
     // Start is called before the first frame update
@@ -34,6 +43,11 @@ public class PlayerController : MonoBehaviour
         jump();
         attack();
         movement();
+        Dashing();
+        if (isDashing)
+        {
+            return;
+        }
     }
 
     void Update()
@@ -102,5 +116,27 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetTrigger("isAttack");
         }
+    }
+
+    void Dashing()
+    {
+        if (canDash && Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            animator.SetTrigger("isDash");
+            StartCoroutine(Dash());
+        }
+    }
+    IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = rigidbody2D.gravityScale;
+        rigidbody2D.gravityScale = 0f;
+        rigidbody2D.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
+        rigidbody2D.gravityScale = originalGravity;
+        canDash = true;
     }
 }
