@@ -195,41 +195,38 @@ public class PlayerController : MonoBehaviour
     }
 
     void WallJump()
+{
+    if (isWallSliding)
     {
-        if (isWallSliding)
+        // Determine the direction of the wall
+        float wallDirection = 0f;
+        if (Physics2D.Raycast(transform.position, Vector2.right, wallCheckDistance, wallLayer))
         {
-            // Determine the direction of the wall
-            float wallDirection = 0f;
-            if (Physics2D.Raycast(transform.position, Vector2.right, wallCheckDistance, wallLayer))
-            {
-                wallDirection = -1f; // Wall is on the right
-            }
-            else if (Physics2D.Raycast(transform.position, Vector2.left, wallCheckDistance, wallLayer))
-            {
-                wallDirection = 1f; // Wall is on the left
-            }
+            wallDirection = -1f; // Wall is on the right
+        }
+        else if (Physics2D.Raycast(transform.position, Vector2.left, wallCheckDistance, wallLayer))
+        {
+            wallDirection = 1f; // Wall is on the left
+        }
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
             // Update player scale to face the wall
             if (wallDirection != 0)
             {
                 transform.localScale = new Vector3(wallDirection, 1f, 1f);
             }
 
-            isWallJumping = false;
+            isWallJumping = true;
             wallJumpDirection = wallDirection; // Use the wall direction for jumping
             wallJumpTimer = wallJumpTime;
 
             CancelInvoke(nameof(StopWallJumping));
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                isWallJumping = true;
-                rigidbody2D.velocity = new Vector2(wallJumpDirection * wallJumpForce, jumpforce);
-                Invoke(nameof(StopWallJumping), wallJumpTime);
-            }
+            rigidbody2D.velocity = new Vector2(wallJumpDirection * wallJumpForce, jumpforce);
+            Invoke(nameof(StopWallJumping), wallJumpTime);
         }
     }
-
+}
 
     void StopWallJumping()
     {
