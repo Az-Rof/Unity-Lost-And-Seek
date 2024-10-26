@@ -12,7 +12,7 @@ TagManager:
   - Water
   - UI
   - Decoration
-  - 
+  - Wall
   - 
   - 
   - 
@@ -43,6 +43,9 @@ TagManager:
     locked: 0
   - name: Environment
     uniqueID: 1700551609
+    locked: 0
+  - name: Ground
+    uniqueID: 884286537
     locked: 0
   - name: Decoration
     uniqueID: 93736469
